@@ -12,7 +12,7 @@ import (
 	"github.com/fatih/color"
 )
 
-func (d *DSP) SetMute(ctx context.Context, block string, mute bool) (bool, error) {
+func (d *DSP) SetMute(ctx context.Context, block string, mute bool) error {
 
 	//we generate our set status request, then we ship it out
 
@@ -28,7 +28,7 @@ func (d *DSP) SetMute(ctx context.Context, block string, mute bool) (bool, error
 	resp, err := d.SendCommand(ctx, req)
 	if err != nil {
 		log.Printf(color.HiRedString("Error: %v", err.Error()))
-		return false, err
+		return err
 	}
 
 	//we need to unmarshal our response, parse it for the value we care about, then role with it from there
@@ -36,25 +36,25 @@ func (d *DSP) SetMute(ctx context.Context, block string, mute bool) (bool, error
 	err = json.Unmarshal(resp, &val)
 	if err != nil {
 		log.Printf(color.HiRedString("Error: %v", err.Error()))
-		return false, err
+		return err
 	}
 
 	//otherwise we check to see what the value is set to
 	if val.Result.Name != block {
 		errmsg := fmt.Sprintf("Invalid response, the name recieved does not match the name sent %v/%v", block, val.Result.Name)
 		log.Printf(color.HiRedString(errmsg))
-		return false, errors.New(errmsg)
+		return errors.New(errmsg)
 	}
 
 	if val.Result.Value == 1.0 {
-		return true, nil
+		return nil
 	}
 	if val.Result.Value == 0.0 {
-		return false, nil
+		return nil
 	}
 	errmsg := fmt.Sprintf("[QSC-Communication] Invalid response received: %v", val.Result)
 	log.Printf(color.HiRedString(errmsg))
-	return false, errors.New(errmsg)
+	return errors.New(errmsg)
 }
 
 func (d *DSP) SetVolume(ctx context.Context, block string, volume int) error {

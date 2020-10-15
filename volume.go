@@ -16,7 +16,6 @@ func (d *DSP) SetMute(ctx context.Context, block string, mute bool) error {
 
 	//we generate our set status request, then we ship it out
 
-	block = block + "Mute"
 	req := d.GetGenericSetStatusRequest(ctx)
 	req.Params.Name = block
 	if mute {
@@ -59,7 +58,6 @@ func (d *DSP) SetMute(ctx context.Context, block string, mute bool) error {
 
 func (d *DSP) SetVolume(ctx context.Context, block string, volume int) error {
 
-	block = block + "Gain"
 	log.Printf("got: %v", volume)
 	req := d.GetGenericSetStatusRequest(ctx)
 	req.Params.Name = block
@@ -106,7 +104,6 @@ func (d *DSP) GetVolumes(ctx context.Context, blocks []string) (map[string]int, 
 	toReturn := make(map[string]int)
 
 	for i, block := range blocks {
-		block = block + "Gain"
 		resp, err := d.GetControlStatus(ctx, block)
 		if err != nil {
 			log.Printf(color.HiRedString("There was an error: %v", err.Error()))
@@ -138,7 +135,6 @@ func (d *DSP) GetMutes(ctx context.Context, blocks []string) (map[string]bool, e
 	toReturn := make(map[string]bool)
 
 	for i, block := range blocks {
-		block = block + "Mute"
 		resp, err := d.GetControlStatus(ctx, block)
 		if err != nil {
 			log.Printf(color.HiRedString("There was an error: %v", err.Error()))
